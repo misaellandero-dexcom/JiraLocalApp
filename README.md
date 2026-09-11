@@ -2,8 +2,6 @@
 
 A macOS menu bar app that shows your assigned unresolved Jira tickets, groups them by project, and lets you start or resume GitHub Copilot CLI sessions directly from Terminal.app.
 
-![JiraLocalApp menu bar ticket list](docs/jiralocalapp-menu.png)
-
 ## Requirements
 
 - macOS 13 or newer.
