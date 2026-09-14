@@ -1,8 +1,10 @@
 import Foundation
+import AppKit
 
 struct AppSettings {
     var jiraToken: String
     var agentInstructions: String
+    var projectDirectories: [String: String]
 }
 
 enum AppSettingsError: Error, LocalizedError {
@@ -22,6 +24,7 @@ final class AppSettingsService {
     """
 
     private let agentInstructionsKey = "agentInstructions"
+    private let projectDirectoriesKey = "projectDirectories"
 
     private var jiraEnvURL: URL {
         FileManager.default.homeDirectoryForCurrentUser
@@ -29,15 +32,40 @@ final class AppSettingsService {
     }
 
     func load() -> AppSettings {
-        AppSettings(
+        let savedDirs = UserDefaults.standard.dictionary(forKey: projectDirectoriesKey) as? [String: String] ?? [:]
+        return AppSettings(
             jiraToken: loadJiraToken() ?? "",
-            agentInstructions: UserDefaults.standard.string(forKey: agentInstructionsKey) ?? Self.defaultAgentInstructions
+            agentInstructions: UserDefaults.standard.string(forKey: agentInstructionsKey) ?? Self.defaultAgentInstructions,
+            projectDirectories: savedDirs
         )
     }
 
     func save(_ settings: AppSettings) throws {
         try saveJiraToken(settings.jiraToken)
         UserDefaults.standard.set(settings.agentInstructions, forKey: agentInstructionsKey)
+        UserDefaults.standard.set(settings.projectDirectories, forKey: projectDirectoriesKey)
+    }
+
+    static func chooseDirectory(initialPath: String? = nil, message: String = "Select repository directory") -> String? {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.canCreateDirectories = true
+        panel.prompt = "Select"
+        panel.message = message
+
+        if let initialPath, FileManager.default.fileExists(atPath: initialPath) {
+            panel.directoryURL = URL(fileURLWithPath: initialPath)
+        } else {
+            panel.directoryURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Documents/GitHub")
+        }
+
+        NSApp.activate(ignoringOtherApps: true)
+        if panel.runModal() == .OK, let url = panel.url {
+            return url.path
+        }
+        return nil
     }
 
     private func loadJiraToken() -> String? {

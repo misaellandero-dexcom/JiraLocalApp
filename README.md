@@ -15,7 +15,8 @@ The Jira CLI is required for this app to fetch tickets. Copilot CLI does not nee
 ## Features
 
 - Fetches assigned unresolved Jira tickets through the local read-only `~/.local/bin/jira` CLI.
-- Provides a settings panel to save your Jira token as `JIRA_PAT` in `~/.config/jira/.env`.
+- Automatically asks for the repository folder when starting an agent for a project if not already configured, and remembers the location.
+- Provides a settings panel to save your Jira token as `JIRA_PAT` in `~/.config/jira/.env` and manage project repository paths.
 - Lets you define reusable agent instructions for new Copilot ticket sessions.
 - Shows active Copilot agents grouped by Jira ticket.
 - Reads local Copilot session state from `~/.copilot/session-state` and `~/.copilot/open-sessions-state.json`.

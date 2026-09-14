@@ -118,6 +118,13 @@ private struct TicketDetailRow: View {
                             .foregroundStyle(.green)
                     }
                 }
+
+                if let repoPath = settings.directory(for: ticket) ?? session?.cwd {
+                    Text("Repo: \(repoPath)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
             }
 
             Spacer()
@@ -129,11 +136,14 @@ private struct TicketDetailRow: View {
                     }
                 } else {
                     Button("Start") {
-                        let directory = FileManager.default.homeDirectoryForCurrentUser
-                            .appendingPathComponent("Documents/GitHub").path
-                        TerminalLauncher.startSession(forTicket: ticket, in: directory, instructions: settings.agentInstructions)
+                        settings.startSession(for: ticket, existingSession: session)
                     }
                 }
+                Button("Set Repo...") {
+                    _ = settings.promptAndSetDirectory(for: ticket)
+                }
+                .font(.caption)
+
                 Button("View Ticket") {
                     TerminalLauncher.openTicketInBrowser(ticket)
                 }

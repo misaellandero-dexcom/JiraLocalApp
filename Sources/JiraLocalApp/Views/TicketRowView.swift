@@ -36,6 +36,10 @@ struct TicketRowView: View {
         }
         .padding(.vertical, 4)
         .contextMenu {
+            Button("Set Repository Folder...") {
+                _ = settings.promptAndSetDirectory(for: ticket)
+            }
+            Divider()
             Button("Open in Browser") {
                 TerminalLauncher.openTicketInBrowser(ticket)
             }
@@ -64,9 +68,7 @@ struct TicketRowView: View {
             .font(.system(size: 11))
         } else {
             Button("Start") {
-                let directory = session?.cwd ?? FileManager.default.homeDirectoryForCurrentUser
-                    .appendingPathComponent("Documents/GitHub").path
-                TerminalLauncher.startSession(forTicket: ticket, in: directory, instructions: settings.agentInstructions)
+                settings.startSession(for: ticket, existingSession: session)
             }
             .buttonStyle(.borderless)
             .font(.system(size: 11))
